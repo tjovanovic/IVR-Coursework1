@@ -1,4 +1,4 @@
-% Dataset .. Possible values (1, 2, 3)
+% D
 dir_num = 1
 
 % Directory path of the images
@@ -26,10 +26,7 @@ for i=1:num_filter_frames
     imshow(chosen_images(:,:,:,i));
 end
 
-
-% Get the background as the median over all the chosen images
 background = median(chosen_images, 4);
 
-% Write background as "background$i.jpg"
 imwrite(background, ['background' int2str(dir_num) '.jpg']);
     

@@ -1,0 +1,23 @@
+dir_num = 1;
+dir_name = ['data' int2str(dir_num) '/'];
+
+image_names = dir([dir_name '*.jpg']);
+num_images = length(images);
+
+background = imread(['background' int2str(dir_num) '.jpg']);
+
+center_Xs = zeros(3, num_images);
+center_Ys = zeros(3, num_images);
+
+for i=2:2
+    frame = normalize( imread( [dir_name images(i).name] ) );
+    binary_image = get_binary(frame, background);
+    region_props = regionprops(binary_image, 'all');
+    
+    found_center = zeros(1,
+    for j=1:length(region_props)
+        center_j = region_props(j).Centroid
+        
+    end
+    
+end

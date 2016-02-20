@@ -3,17 +3,20 @@ function ret = get_binary(image, background)
 % Subtract background from the original image
 no_background = abs(imsubtract(background, image));
 
-% Gaussian filter to reduce the noise
-gaussian_filter = fspecial('gaussian',[10 10], 2);
-filtered_image = imfilter(no_background, gaussian_filter, 'same');
+% Get the binary image for each channel
+thresholded_image = no_background > 50;
 
-% Convert the image from RGB to Gray
-grayscale_image = rgb2gray(filtered_image);
-grayscale_image = im2double(grayscale_image);
+% Or the images per channel to get the final image
+binary_image = thresholded_image(:,:,1) | thresholded_image(:,:,2) | thresholded_image(:,:,3);
 
-% Extract the binary image using Otsu thresholding
-threshold = graythresh(grayscale_image)
-binary_image = im2bw(grayscale_image, threshold);
+% Close the gaps to get clear blobs
+se = strel('disk', 6);
+binary_image = imclose(binary_image, se);
+
+% Mitigates the issue of super small regions by removing them with erode
+binary_image = bwmorph(binary_image, 'erode', 2);
+binary_image = bwmorph(binary_image, 'dilate', 3);
+
 
 % Return labeled image with the connected regions
 ret = bwlabel(binary_image,8);

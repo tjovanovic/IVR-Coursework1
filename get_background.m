@@ -1,12 +1,12 @@
 % Dataset .. Possible values (1, 2, 3)
-dir_num = 1
+dir_num = 3
 
 % Directory path of the images
 dir_name = ['data' int2str(dir_num) '/']
 
 % Get the list of all the image file names from the chosen directory
 image_names = dir([dir_name '*.jpg']);
-num_images = length(images);
+num_images = length(image_names);
 
 % Total number of frames we want for the median filtering
 num_filter_frames = 20;
@@ -21,7 +21,7 @@ for i=1:num_filter_frames
     image_index = round( image_index );
     
     % Normalize the image after reading
-    image = normalize( imread( [dir_name images(image_index).name] ) );
+    image = imread( [dir_name image_names(image_index).name] );
     chosen_images(:,:,:,i) = image;
     imshow(chosen_images(:,:,:,i));
 end

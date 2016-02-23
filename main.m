@@ -5,7 +5,7 @@ image_files = dir([dir_name '*.jpg']);
 num_images = length(image_files);
 
 % Which frame we want to start tracking the robots from
-starting_frame = 120;
+starting_frame = 1;
 
 % Fetch the background for a particular dataset
 background = imread(['background' int2str(dir_num) '.jpg']);
@@ -43,8 +43,11 @@ for j=1:num_robots
     [maxValue,maxValueIndex] = max(averageColor);
     
     % Threshold based on colors
-    if(maxValueIndex == 1)
+    if(maxValueIndex == 1 && (averageColor(1) ~= averageColor(2)))
         color = 'r';
+    end
+    if(maxValueIndex == 1 && (averageColor(1) == averageColor(2)))
+        color = 'g';
     end
     if(maxValueIndex == 2)
         color = 'g';
@@ -112,20 +115,73 @@ for i=(starting_frame+1):num_images
         end 
     end
    
-    %end
-    
     % Draw the orientations of the robots
     for k=1:num_robots
-        % Get color so that the trajectory can be drawn in that color
-        color = holdRobotInformation(k);
-        plot(center_Xs(k,i-1:i),center_Ys(k,i-1:i),color,'LineWidth',6); 
+        % Use two points to calculate the equation of the line that will
+        % represent the robot's orientation
+        
+        point1 = zeros(1,2);
+        point1(1,1) = center_Xs(k,max((i-10),1));
+        point1(1,2) = center_Ys(k,max((i-10),1));
+        
+        point2 = zeros(1,2);
+        point2(1,1) = center_Xs(k,i);
+        point2(1,2) = center_Ys(k,i);
+        
+        % Only draw orientation if the centers have changed and the robot
+        % has moved a little bit
+        if(not(point1(1,1) ==  point2(1,1)) && not(point1(1,2) == point2(1,2)) && distance(point1,point2) > 100)          
+            % Find the slope and the y-intercept of the line 
+            if(not((point2(1,1)-point1(1,1)) == 0))
+                slope = (point2(1,2)-point1(1,2)) / (point2(1,1)-point1(1,1));
+                yintercept = point1(1,2) - (slope * point1(1,1));
+            end
+
+            % Case when the robot is going left on the screen  
+            if(center_Xs(k,i) < center_Xs(k,i-1))
+                if(center_Xs(k,i) - 40 > 0)
+                    newPointX = center_Xs(k,i) - 40;
+                end
+                if(center_Xs(k,i) - 40 <= 0)
+                    newPointX = 0;
+                end   
+            end
+
+            % Case when the robot is going right on the screen  
+            if(center_Xs(k,i) > center_Xs(k,i-1))    
+                if(center_Xs(k,i) + 40 > 640)
+                    newPointX = 640;
+                end
+                if(center_Xs(k,i) + 40 <= 640)
+                    newPointX = center_Xs(k,i) + 40;
+                end
+            end    
+            % Find new point that will be on the other end of the line segment
+            if(not(slope * newPointX + yintercept < 0) && not(slope * newPointX + yintercept > 480))
+                newPointY = slope * newPointX + yintercept;
+            end
+            if(slope * newPointX + yintercept < 0)
+                newPointY = 0;
+            end
+            if(slope * newPointX + yintercept > 480)
+                newPointY = 480;
+            end
+
+            newPoint = zeros(1,2);
+            newPoint(1,1) = newPointX;
+            newPoint(1,2) = newPointY;
+
+            % Get color so that the trajectory can be drawn in that color
+            color = holdRobotInformation(k);        
+            plot([point2(1), newPoint(1)], [point2(2), newPoint(2)], color, 'LineWidth', 2);
+        end
     end
-    
+
     % Draw the paths of the robots
     for k=1:num_robots
         % Get color so that the trajectory can be drawn in that color
         color = holdRobotInformation(k);
-        plot(center_Xs(k,starting_frame:i),center_Ys(k,starting_frame:i),color,'LineWidth',2);
+        plot(center_Xs(k,starting_frame:i),center_Ys(k,starting_frame:i),color,'LineWidth',6);
     end
     hold on;
     

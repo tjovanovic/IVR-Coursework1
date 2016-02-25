@@ -17,6 +17,5 @@ binary_image = imclose(binary_image, se);
 binary_image = bwmorph(binary_image, 'erode', 2);
 binary_image = bwmorph(binary_image, 'dilate', 3);
 
-
 % Return labeled image with the connected regions
 ret = bwlabel(binary_image,8);

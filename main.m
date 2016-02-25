@@ -1,4 +1,4 @@
-dir_num = 3;
+dir_num = 4;
 dir_name = ['data' int2str(dir_num) '/'];
 
 image_files = dir([dir_name '*.jpg']);
@@ -85,7 +85,7 @@ for i=(starting_frame+1):num_images
     % Holds the indicator of the center being present for a particular robot
     found_center = zeros(1, num_robots);
     
-    % Get the bouding boxes and centers of the regions from the NEW frame
+    % Get the bounding boxes and centers of the regions from the NEW frame
     for j=1:min(num_regions, num_robots)        
         % J-th center from the list of white blobs
         center_j = region_props(j).Centroid;

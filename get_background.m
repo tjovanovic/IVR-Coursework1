@@ -1,5 +1,5 @@
-% Dataset .. Possible values (1, 2, 3)
-dir_num = 3
+% Dataset .. Possible values (1, 2, 3,4)
+dir_num = 4;
 
 % Directory path of the images
 dir_name = ['data' int2str(dir_num) '/']
@@ -10,7 +10,6 @@ num_images = length(image_names);
 
 % Total number of frames we want for the median filtering
 num_filter_frames = 20;
-
 
 chosen_images = zeros(480,640,3,num_filter_frames, 'uint8');
 
@@ -32,4 +31,3 @@ background = median(chosen_images, 4);
 
 % Write background as "background$i.jpg"
 imwrite(background, ['background' int2str(dir_num) '.jpg']);
-    
